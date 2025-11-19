@@ -1,4 +1,4 @@
-import { arabicToRoman, isValidArabicInput } from './arabicToRoman.js';
+import { arabicToRoman, isValidArabicInput } from '../arabicToRoman.js';
 
 describe('Conversor Arábigo a Romano', () => {
     
@@ -123,7 +123,7 @@ describe('Conversor Arábigo a Romano', () => {
 });
 
 
-import { romanToArabic, isValidRoman } from './romanToArabic.js';
+import { romanToArabic, isValidRoman } from '../romanToArabic.js';
 
 describe('Conversor Romano a Arábigo', () => {
     
@@ -278,7 +278,7 @@ describe('Conversor Romano a Arábigo', () => {
             const testNumbers = [1, 4, 9, 14, 49, 99, 444, 999, 2023, 3999];
             
             testNumbers.forEach(num => {
-                const roman = require('./arabicToRoman.js').arabicToRoman(num);
+                const roman = require('../arabicToRoman.js').arabicToRoman(num);
                 const convertedBack = romanToArabic(roman);
                 expect(convertedBack).toBe(num);
             });

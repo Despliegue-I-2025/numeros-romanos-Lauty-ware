@@ -1,2 +1,0 @@
-He tenido dificultades con el desarrollo del proyecto. Ya que nunca habia utilizado Vercel. Espero que mi primera entrega este correcta. Y, en caso de que no, espero pacientemente las correcciones. 
-Decidi tambian agregar un archivo HTML, el cual cumpla ambas funciones solicitadas.
