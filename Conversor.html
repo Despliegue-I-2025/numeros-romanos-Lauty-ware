@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor Bidireccional: Arábigos ↔ Romanos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .conversion-type {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+        
+        .conversion-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #e0e0e0;
+            color: #555;
+        }
+        
+        .conversion-btn.active {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .convert-btn {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #ddd;
+        }
+        
+        .result h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .converted-number {
+            font-size: 2.8rem;
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        .info {
+            background-color: #e8f4fc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            text-align: left;
+            font-size: 0.9rem;
+            border-left: 5px solid #3498db;
+        }
+        
+        .info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .info ul {
+            padding-left: 20px;
+        }
+        
+        .info li {
+            margin-bottom: 8px;
+        }
+        
+        .examples {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .example {
+            background-color: #f1f1f1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .example:hover {
+            background-color: #e0e0e0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .converted-number {
+                font-size: 2.2rem;
+            }
+            
+            .conversion-type {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversor Bidireccional</h1>
+        <p class="subtitle">Convierte entre números arábigos y romanos</p>
+        
+        <div class="conversion-type">
+            <button id="arabicToRomanBtn" class="conversion-btn active">Arábigo → Romano</button>
+            <button id="romanToArabicBtn" class="conversion-btn">Romano → Arábigo</button>
+        </div>
+        
+        <div id="arabicToRomanSection">
+            <div class="input-group">
+                <label for="arabicInput">Ingresa un número arábigo (1-3999):</label>
+                <input type="text" id="arabicInput" placeholder="Ej: 2023" autocomplete="off">
+            </div>
+        </div>
+        
+        <div id="romanToArabicSection" style="display: none;">
+            <div class="input-group">
+                <label for="romanInput">Ingresa un número romano:</label>
+                <input type="text" id="romanInput" placeholder="Ej: MMXXIII" autocomplete="off">
+            </div>
+        </div>
+        
+        <button id="convertBtn" class="convert-btn">Convertir</button>
+        
+        <div class="result">
+            <h3>Resultado:</h3>
+            <div id="output" class="converted-number">-</div>
+            <div id="error" class="error"></div>
+        </div>
+        
+        <div class="info">
+            <h4>Información:</h4>
+            <ul>
+                <li><strong>Arábigo → Romano:</strong> Solo números entre 1 y 3999</li>
+                <li><strong>Romano → Arábigo:</strong> Solo caracteres válidos (I, V, X, L, C, D, M)</li>
+                <li>Los números romanos siguen reglas específicas de combinación</li>
+            </ul>
+            <div class="examples">
+                <div class="example" data-type="arabic" data-value="49">49 → XLIX</div>
+                <div class="example" data-type="arabic" data-value="99">99 → XCIX</div>
+                <div class="example" data-type="arabic" data-value="444">444 → CDXLIV</div>
+                <div class="example" data-type="roman" data-value="XIV">XIV → 14</div>
+                <div class="example" data-type="roman" data-value="XCIX">XCIX → 99</div>
+                <div class="example" data-type="roman" data-value="MMXXIII">MMXXIII → 2023</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const arabicToRomanBtn = document.getElementById('arabicToRomanBtn');
+            const romanToArabicBtn = document.getElementById('romanToArabicBtn');
+            const arabicToRomanSection = document.getElementById('arabicToRomanSection');
+            const romanToArabicSection = document.getElementById('romanToArabicSection');
+            const arabicInput = document.getElementById('arabicInput');
+            const romanInput = document.getElementById('romanInput');
+            const convertBtn = document.getElementById('convertBtn');
+            const output = document.getElementById('output');
+            const error = document.getElementById('error');
+            const examples = document.querySelectorAll('.example');
+            
+            // Estado actual de conversión
+            let currentConversion = 'arabicToRoman';
+            
+            // Configuración inicial
+            arabicInput.focus();
+            
+            // Función para convertir número arábigo a romano
+            function arabicToRoman(num) {
+                const romanNumerals = [
+                    { value: 1000, numeral: 'M' },
+                    { value: 900, numeral: 'CM' },
+                    { value: 500, numeral: 'D' },
+                    { value: 400, numeral: 'CD' },
+                    { value: 100, numeral: 'C' },
+                    { value: 90, numeral: 'XC' },
+                    { value: 50, numeral: 'L' },
+                    { value: 40, numeral: 'XL' },
+                    { value: 10, numeral: 'X' },
+                    { value: 9, numeral: 'IX' },
+                    { value: 5, numeral: 'V' },
+                    { value: 4, numeral: 'IV' },
+                    { value: 1, numeral: 'I' }
+                ];
+                
+                let roman = '';
+                
+                for (let i = 0; i < romanNumerals.length; i++) {
+                    while (num >= romanNumerals[i].value) {
+                        roman += romanNumerals[i].numeral;
+                        num -= romanNumerals[i].value;
+                    }
+                }
+                
+                return roman;
+            }
+            
+            // Función para validar número romano
+            function isValidRoman(roman) {
+                if (typeof roman !== 'string') return false;
+                if (roman === '') return false;
+                
+                // Verificar que solo contenga caracteres romanos válidos
+                const validChars = /^[IVXLCDM]+$/i;
+                if (!validChars.test(roman)) return false;
+                
+                // Convertir a mayúsculas para validación
+                const upperRoman = roman.toUpperCase();
+                
+                // Validar reglas de repetición
+                const repetitionRules = [
+                    /I{4,}/, /X{4,}/, /C{4,}/, /M{4,}/, // No más de 3 repeticiones
+                    /V{2,}/, /L{2,}/, /D{2,}/,           // No se repiten V, L, D
+                ];
+                
+                for (let rule of repetitionRules) {
+                    if (rule.test(upperRoman)) return false;
+                }
+                
+                // Validar sustracciones válidas
+                const invalidPatterns = [
+                    /IL/, /IC/, /ID/, /IM/,  // I solo puede restar a V y X
+                    /VX/, /VL/, /VC/, /VD/, /VM/, // V no puede restar
+                    /XD/, /XM/,              // X solo puede restar a L y C
+                    /LC/, /LD/, /LM/,        // L no puede restar
+                    /DM/,                    // D no puede restar
+                ];
+                
+                for (let pattern of invalidPatterns) {
+                    if (pattern.test(upperRoman)) return false;
+                }
+                
+                return true;
+            }
+            
+            // Función para convertir número romano a arábigo
+            function romanToArabic(roman) {
+                if (!isValidRoman(roman)) {
+                    throw new Error(`"${roman}" no es un número romano válido`);
+                }
+                
+                const romanNumerals = {
+                    'I': 1,
+                    'V': 5,
+                    'X': 10,
+                    'L': 50,
+                    'C': 100,
+                    'D': 500,
+                    'M': 1000
+                };
+                
+                const validSubtractions = {
+                    'IV': 4,
+                    'IX': 9,
+                    'XL': 40,
+                    'XC': 90,
+                    'CD': 400,
+                    'CM': 900
+                };
+                
+                const upperRoman = roman.toUpperCase();
+                let result = 0;
+                let i = 0;
+                
+                while (i < upperRoman.length) {
+                    // Verificar si hay una sustracción válida (2 caracteres)
+                    if (i < upperRoman.length - 1) {
+                        const twoChars = upperRoman.substring(i, i + 2);
+                        if (validSubtractions[twoChars]) {
+                            result += validSubtractions[twoChars];
+                            i += 2;
+                            continue;
+                        }
+                    }
+                    
+                    // Si no hay sustracción, procesar carácter individual
+                    const currentChar = upperRoman[i];
+                    result += romanNumerals[currentChar];
+                    i++;
+                }
+                
+                return result;
+            }
+            
+            // Función para manejar la conversión
+            function handleConversion() {
+                error.textContent = '';
+                
+                if (currentConversion === 'arabicToRoman') {
+                    const inputValue = arabicInput.value.trim();
+                    
+                    // Verificar si el campo está vacío
+                    if (inputValue === '') {
+                        output.textContent = '-';
+                        error.textContent = 'Por favor, ingresa un número.';
+                        return;
+                    }
+                    
+                    // Verificar si es un número válido
+                    const number = parseInt(inputValue, 10);
+                    
+                    if (isNaN(number)) {
+                        output.textContent = '-';
+                        error.textContent = 'Error: El valor ingresado no es un número válido.';
+                        return;
+                    }
+                    
+                    // Verificar si está en el rango permitido
+                    if (number < 1 || number > 3999) {
+                        output.textContent = '-';
+                        error.textContent = 'Error: Solo se permiten números entre 1 y 3999.';
+                        return;
+                    }
+                    
+                    // Convertir a romano
+                    const romanNumeral = arabicToRoman(number);
+                    output.textContent = romanNumeral;
+                    
+                } else { // romanToArabic
+                    const inputValue = romanInput.value.trim();
+                    
+                    // Verificar si el campo está vacío
+                    if (inputValue === '') {
+                        output.textContent = '-';
+                        error.textContent = 'Por favor, ingresa un número romano.';
+                        return;
+                    }
+                    
+                    try {
+                        // Convertir a arábigo
+                        const arabicNumber = romanToArabic(inputValue);
+                        output.textContent = arabicNumber;
+                    } catch (e) {
+                        output.textContent = '-';
+                        error.textContent = e.message;
+                    }
+                }
+            }
+            
+            // Cambiar entre modos de conversión
+            arabicToRomanBtn.addEventListener('click', function() {
+                currentConversion = 'arabicToRoman';
+                arabicToRomanBtn.classList.add('active');
+                romanToArabicBtn.classList.remove('active');
+                arabicToRomanSection.style.display = 'block';
+                romanToArabicSection.style.display = 'none';
+                arabicInput.focus();
+                output.textContent = '-';
+                error.textContent = '';
+            });
+            
+            romanToArabicBtn.addEventListener('click', function() {
+                currentConversion = 'romanToArabic';
+                romanToArabicBtn.classList.add('active');
+                arabicToRomanBtn.classList.remove('active');
+                romanToArabicSection.style.display = 'block';
+                arabicToRomanSection.style.display = 'none';
+                romanInput.focus();
+                output.textContent = '-';
+                error.textContent = '';
+            });
+            
+            // Event listeners para el botón de conversión
+            convertBtn.addEventListener('click', handleConversion);
+            
+            // Event listeners para la tecla Enter
+            arabicInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleConversion();
+                }
+            });
+            
+            romanInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleConversion();
+                }
+            });
+            
+            // Ejemplos interactivos
+            examples.forEach(example => {
+                example.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    const value = this.getAttribute('data-value');
+                    
+                    if (type === 'arabic') {
+                        if (currentConversion !== 'arabicToRoman') {
+                            arabicToRomanBtn.click();
+                        }
+                        arabicInput.value = value;
+                        handleConversion();
+                    } else {
+                        if (currentConversion !== 'romanToArabic') {
+                            romanToArabicBtn.click();
+                        }
+                        romanInput.value = value;
+                        handleConversion();
+                    }
+                });
+            });
+            
+            arabicInput.value = '2023';
+            handleConversion();
+        });
+    </script>
+</body>
+</html>
