@@ -31,3 +31,4 @@ function convertirARomano(numero) {
     
     return resultado;
 }
+module.exports = { ArabicToRoman };

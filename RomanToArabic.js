@@ -83,3 +83,4 @@ class RomanConverter {
     }
 
 }
+module.exports = {RomanToArabic};
