@@ -9,10 +9,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
+// GET /a2r?arabic=123 → {"roman":"CXXIII"}
 app.get('/a2r', (req, res) => {
   const arabicStr = req.query.arabic;
-
-const arabic = parseInt(arabicStr, 10);
+  const arabic = parseInt(arabicStr, 10);
 
   if (!arabicStr || Number.isNaN(arabic) || arabic <= 0) {
     return res
@@ -24,12 +24,13 @@ const arabic = parseInt(arabicStr, 10);
     const roman = arabicToRoman(arabic);
     return res.status(200).json({ roman });
   } catch (err) {
-     return res
+    return res
       .status(400)
       .json({ error: err.message || 'Error al convertir a romano' });
   }
 });
 
+// GET /r2a?roman=CXXIII → {"arabic":123}
 app.get('/r2a', (req, res) => {
   const roman = req.query.roman;
 
@@ -41,13 +42,11 @@ app.get('/r2a', (req, res) => {
 
   try {
     const arabic = romanToArabic(roman.toUpperCase());
-
     if (arabic == null || Number.isNaN(arabic)) {
       return res
         .status(400)
         .json({ error: 'No se pudo convertir el número romano' });
     }
-
     return res.status(200).json({ arabic });
   } catch (err) {
     return res
@@ -63,5 +62,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
-
-module.exports = app;
