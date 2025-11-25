@@ -1,23 +1,8 @@
 {
   "name": "numeros-romanos-lauty-ware",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "test": "jest"
-  },
+   "version": "1.0.0",
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/.vercel/"
-    ]
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
   }
 }
-

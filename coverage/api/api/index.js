@@ -3,21 +3,43 @@ const cors = require('cors');
 
 const app = express();
 
-// Configurar CORS para permitir todas las solicitudes
+// 🔥 CONFIGURACIÓN CORS COMPLETA Y EXPLÍCITA
+app.use((req, res, next) => {
+  console.log('📍 Solicitud recibida:', req.method, req.url);
+  
+  // Headers CORS MÁS COMPLETOS
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, HEAD');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Expose-Headers', 'Content-Length, Content-Range');
+  
+  // Manejar preflight (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    console.log('🛬 Preflight OPTIONS recibido');
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
+// También usar el middleware cors por si acaso
 app.use(cors({
   origin: '*',
   methods: ['GET', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: false
 }));
 
 app.use(express.json());
 
-// Ruta GET /a2r?arabic=123
+// 🎯 RUTA 1: /a2r - Arábigo a Romano
 app.get('/a2r', (req, res) => {
+  console.log('🔢 /a2r - Parámetros:', req.query);
+  
   const arabic = req.query.arabic;
   
   // Validar parámetro ausente
   if (!arabic) {
+    console.log('❌ /a2r - Error: Parámetro arabic ausente');
     return res.status(400).json({ 
       error: 'Parámetro "arabic" es requerido' 
     });
@@ -26,6 +48,7 @@ app.get('/a2r', (req, res) => {
   // Validar que sea número
   const arabicNumber = parseInt(arabic);
   if (isNaN(arabicNumber)) {
+    console.log('❌ /a2r - Error: No es número válido');
     return res.status(400).json({ 
       error: 'Parámetro "arabic" debe ser un número válido' 
     });
@@ -33,6 +56,7 @@ app.get('/a2r', (req, res) => {
   
   // Validar rango (1-3999)
   if (arabicNumber < 1 || arabicNumber > 3999) {
+    console.log('❌ /a2r - Error: Fuera de rango');
     return res.status(400).json({ 
       error: 'El número debe estar entre 1 y 3999' 
     });
@@ -40,32 +64,53 @@ app.get('/a2r', (req, res) => {
   
   // Convertir a romano
   const roman = arabicToRoman(arabicNumber);
+  console.log('✅ /a2r - Conversión exitosa:', arabicNumber, '→', roman);
+  
   res.status(200).json({ roman });
 });
 
-// Ruta GET /r2a?roman=CXXIII
+// 🎯 RUTA 2: /r2a - Romano a Arábigo
 app.get('/r2a', (req, res) => {
+  console.log('🔤 /r2a - Parámetros:', req.query);
+  
   const roman = req.query.roman;
   
   // Validar parámetro ausente
   if (!roman) {
+    console.log('❌ /r2a - Error: Parámetro roman ausente');
     return res.status(400).json({ 
       error: 'Parámetro "roman" es requerido' 
     });
   }
   
   // Validar y convertir
-  const arabic = romanToArabic(roman.toString().toUpperCase());
+  const arabic = romanToArabic(roman.toString().toUpperCase().trim());
   if (!arabic) {
+    console.log('❌ /r2a - Error: Romano inválido');
     return res.status(400).json({ 
       error: 'Número romano inválido' 
     });
   }
   
+  console.log('✅ /r2a - Conversión exitosa:', roman, '→', arabic);
   res.status(200).json({ arabic });
 });
 
-// Función para convertir arábigo a romano
+// 🏠 RUTA PRINCIPAL - Para pruebas
+app.get('/', (req, res) => {
+  console.log('🏠 Ruta principal accedida');
+  res.json({ 
+    message: '✅ API de Números Romanos - FUNCIONANDO',
+    status: 'operacional',
+    endpoints: [
+      'GET /a2r?arabic=123 → {"roman":"CXXIII"}',
+      'GET /r2a?roman=CXXIII → {"arabic":123}'
+    ],
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 🔧 FUNCIONES DE CONVERSIÓN
 function arabicToRoman(num) {
   const romanNumerals = [
     { value: 1000, numeral: 'M' },
@@ -96,14 +141,18 @@ function arabicToRoman(num) {
   return result;
 }
 
-// Función para convertir romano a arábigo
 function romanToArabic(roman) {
+  // Validar caracteres básicos primero
+  if (!/^[IVXLCDM]+$/.test(roman)) {
+    return null;
+  }
+  
   const romanValues = {
     'I': 1, 'V': 5, 'X': 10, 'L': 50,
     'C': 100, 'D': 500, 'M': 1000
   };
   
-  // Validar formato romano
+  // Validar formato romano correcto
   const validRomanRegex = /^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
   if (!validRomanRegex.test(roman)) {
     return null;
@@ -128,18 +177,14 @@ function romanToArabic(roman) {
   return result;
 }
 
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'API de Números Romanos - Funcionando correctamente',
-    ejemplos: [
-      '/a2r?arabic=123 → {"roman":"CXXIII"}',
-      '/r2a?roman=CXXIII → {"arabic":123}'
-    ]
+// 🚨 MANEJADOR DE ERRORES
+app.use((req, res) => {
+  console.log('❌ Ruta no encontrada:', req.url);
+  res.status(404).json({ 
+    error: 'Ruta no encontrada',
+    rutas_validas: ['/a2r', '/r2a', '/']
   });
 });
 
-// Manejar método OPTIONS para CORS preflight
-app.options('*', cors());
-
+// 📝 EXPORT PARA VERCEL
 module.exports = app;
