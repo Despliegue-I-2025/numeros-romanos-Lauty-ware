@@ -1,5 +1,4 @@
-export default function handler(req, res) {
-  const { arabicToRoman } = require('../ArabicToRoman');
+const { arabicToRoman } = require('../ArabicToRoman');
 
 module.exports = (req, res) => {
   // CORS
@@ -28,6 +27,4 @@ module.exports = (req, res) => {
       .status(400)
       .json({ error: err.message || 'Error al convertir a romano' });
   }
-}; 
-
-}
+};
